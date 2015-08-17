@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ht.calltree.sys.dao.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.ht.calltree.sys.model.UserWrapper" >
+    <id column="staff_id" property="staffId" jdbcType="VARCHAR" />
+    <result column="staff_spell" property="staffSpell" jdbcType="VARCHAR" />
+    <result column="staff_login_name" property="staffLoginName" jdbcType="VARCHAR" />
+    <result column="staff_name" property="staffName" jdbcType="VARCHAR" />
+    <result column="staff_mobile" property="staffMobile" jdbcType="VARCHAR" />
+    <result column="staff_rt_id" property="staffRtId" jdbcType="VARCHAR" />
+    <result column="primary_group_id" property="primaryGroupId" jdbcType="VARCHAR" />
+    <result column="primary_group_name" property="primaryGroupName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    staff_id, staff_spell, staff_login_name, staff_name, staff_mobile, staff_rt_id, primary_group_id, primary_group_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_USER
+    where staff_id = #{staffId,jdbcType=VARCHAR}
+  </select>
+  <select id="listData" resultMap="BaseResultMap">
+    select staff_id, staff_spell, staff_login_name, staff_name, staff_mobile, staff_rt_id, primary_group_id, primary_group_name
+    from T_SYS_USER
+  </select>
+  <select id="listChildrenData" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from T_SYS_USER where staff_rt_id = #{staffId,jdbcType=VARCHAR} order by staff_name
+  </select>
+  <select id="listChildrenDataAsString" resultType="java.lang.String" parameterType="java.lang.String" >
+    select CALLTREE_USER_FUNCTION(#{staffId,jdbcType=VARCHAR})
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from T_SYS_USER
+    where staff_id = #{staffId,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteAll">
+    delete from T_SYS_USER;
+  </delete>
+  <insert id="insert" parameterType="com.ht.calltree.sys.model.User" >
+    insert into T_SYS_USER (staff_id, staff_spell, staff_login_name, staff_name, 
+      staff_mobile, staff_rt_id, primary_group_id, 
+      primary_group_name)
+    values (#{staffId,jdbcType=VARCHAR}, #{staffSpell,jdbcType=VARCHAR}, #{staffLoginName,jdbcType=VARCHAR}, #{staffName,jdbcType=VARCHAR}, 
+      #{staffMobile,jdbcType=VARCHAR}, #{staffRtId,jdbcType=VARCHAR}, #{primaryGroupId,jdbcType=VARCHAR}, 
+      #{primaryGroupName,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.ht.calltree.sys.model.User" >
+    insert into T_SYS_USER
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="staffId != null" >
+        staff_id,
+      </if>
+      <if test="staffSpell != null" >
+        staff_spell,
+      </if>
+      <if test="staffLoginName != null" >
+        staff_login_name,
+      </if>
+      <if test="staffName != null" >
+        staff_name,
+      </if>
+      <if test="staffMobile != null" >
+        staff_mobile,
+      </if>
+      <if test="staffRtId != null" >
+        staff_rt_id,
+      </if>
+      <if test="primaryGroupId != null" >
+        primary_group_id,
+      </if>
+      <if test="primaryGroupName != null" >
+        primary_group_name,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="staffId != null" >
+        #{staffId,jdbcType=VARCHAR},
+      </if>
+      <if test="staffSpell != null" >
+        #{staffSpell,jdbcType=VARCHAR},
+      </if>
+      <if test="staffLoginName != null" >
+        #{staffLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="staffName != null" >
+        #{staffName,jdbcType=VARCHAR},
+      </if>
+      <if test="staffMobile != null" >
+        #{staffMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="staffRtId != null" >
+        #{staffRtId,jdbcType=VARCHAR},
+      </if>
+      <if test="primaryGroupId != null" >
+        #{primaryGroupId,jdbcType=VARCHAR},
+      </if>
+      <if test="primaryGroupName != null" >
+        #{primaryGroupName,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ht.calltree.sys.model.User" >
+    update T_SYS_USER
+    <set >
+      <if test="staffSpell != null" >
+        staff_spell = #{staffSpell,jdbcType=VARCHAR},
+      </if>
+      <if test="staffLoginName != null" >
+        staff_login_name = #{staffLoginName,jdbcType=VARCHAR},
+      </if>
+      <if test="staffName != null" >
+        staff_name = #{staffName,jdbcType=VARCHAR},
+      </if>
+      <if test="staffMobile != null" >
+        staff_mobile = #{staffMobile,jdbcType=VARCHAR},
+      </if>
+      <if test="staffRtId != null" >
+        staff_rt_id = #{staffRtId,jdbcType=VARCHAR},
+      </if>
+      <if test="primaryGroupId != null" >
+        primary_group_id = #{primaryGroupId,jdbcType=VARCHAR},
+      </if>
+      <if test="primaryGroupName != null" >
+        primary_group_name = #{primaryGroupName,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where staff_id = #{staffId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ht.calltree.sys.model.User" >
+    update T_SYS_USER
+    set staff_spell = #{staffSpell,jdbcType=VARCHAR},
+      staff_login_name = #{staffLoginName,jdbcType=VARCHAR},
+      staff_name = #{staffName,jdbcType=VARCHAR},
+      staff_mobile = #{staffMobile,jdbcType=VARCHAR},
+      staff_rt_id = #{staffRtId,jdbcType=VARCHAR},
+      primary_group_id = #{primaryGroupId,jdbcType=VARCHAR},
+      primary_group_name = #{primaryGroupName,jdbcType=VARCHAR}
+    where staff_id = #{staffId,jdbcType=VARCHAR}
+  </update>
+  <delete id="deleteTest" >
+    delete from T_SYS_USER
+    where staff_id not in
+    <foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+		#{item}  
+	</foreach>
+  </delete>
+  <delete id="deleteAllRoleSet" >
+    delete from T_SYS_USERROLE
+  </delete>
+  <insert id="insertRoleSet" parameterType="com.ht.calltree.sys.model.Userrole" >
+    insert into T_SYS_USERROLE (staff_id, role_id)
+    values (#{staffId,jdbcType=VARCHAR}, #{roleId,jdbcType=INTEGER})
+  </insert>
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ht.calltree.sys.dao.RoleMapper">
+
+	<resultMap id="BaseResultMap" type="com.ht.calltree.sys.model.Role">
+		<id column="staff_id" property="staffId" jdbcType="VARCHAR" />
+		<result column="role_id" property="roleLevel"
+			typeHandler="com.ht.calltree.sys.model.EnumRoleLevelHandler" />
+		<result column="backup_role_id" property="backupRoleLevel"
+			typeHandler="com.ht.calltree.sys.model.EnumRoleLevelHandler" />
+	</resultMap>
+
+	<select id="getRoleByStaffId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select * from
+		T_SYS_USERROLE
+		where
+		staff_id =
+		#{staffId,jdbcType=VARCHAR}
+	</select>
+	<update id="updateBackupRole" parameterType="com.ht.calltree.sys.model.Role">
+		update
+		T_SYS_USERROLE
+		set backup_role_Id = #{backupRoleLevel,jdbcType=INTEGER,typeHandler=com.ht.calltree.sys.model.EnumRoleLevelHandler }
+		where
+		staff_id=#{staffId}
+	</update>
+	<update id="removeSubBackupRole" parameterType="java.lang.String">
+		update
+		calltree.T_SYS_USERROLE t1
+		set backup_role_id = null
+		where
+		t1.staff_id in
+		(select t2.staff_id from calltree.T_SYS_USER t2 where
+		t2.staff_rt_id=#{staffId})
+	</update>
+
+</mapper>

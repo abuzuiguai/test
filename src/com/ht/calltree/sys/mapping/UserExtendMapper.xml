@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ht.calltree.sys.dao.UserExtendMapper">
+	<resultMap id="BaseResultMap" type="com.ht.calltree.sys.model.UserExtend">
+		<id column="staff_id" property="staffId" jdbcType="VARCHAR" />
+		<result column="backup_id" property="backupId" jdbcType="VARCHAR" />
+		<result column="backup_from_id" property="backupFromId" jdbcType="VARCHAR" />
+		<result column="send_object_id" property="sendObjectId" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		staff_id, backup_id, backup_from_id, send_object_id
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from T_SYS_EMP_EXTEND
+		where staff_id = #{staffId,jdbcType=VARCHAR}
+	</select>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from
+		T_SYS_EMP_EXTEND
+		where staff_id = #{staffId,jdbcType=VARCHAR}
+	</delete>
+	<insert id="insert" parameterType="com.ht.calltree.sys.model.UserExtend">
+		insert into T_SYS_EMP_EXTEND
+		(staff_id, backup_id, backup_from_id, send_object_id)
+		values
+		(#{staffId,jdbcType=VARCHAR},
+		#{backupId,jdbcType=VARCHAR},
+		#{backupFromId,jdbcType=VARCHAR},
+		#{sendObjectId,jdbcType=VARCHAR})
+	</insert>
+	<update id="updateByPrimaryKey" parameterType="com.ht.calltree.sys.model.UserExtend">
+		update T_SYS_EMP_EXTEND
+		set backup_Id = #{backupId,jdbcType=VARCHAR},
+		backup_from_Id = #{backupFromId,jdbcType=VARCHAR},
+		send_object_id = #{sendObjectId,jdbcType=VARCHAR}
+		where staff_id =
+		#{staffId,jdbcType=VARCHAR}
+	</update>
+</mapper>

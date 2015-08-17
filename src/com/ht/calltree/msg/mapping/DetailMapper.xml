@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ht.calltree.msg.dao.DetailMapper" >
+  <resultMap id="BaseResultMap" type="com.ht.calltree.msg.model.Detail" >
+    <id column="detail_id" property="detailId" jdbcType="INTEGER" />
+    <result column="content_id" property="contentId" jdbcType="INTEGER" />
+    <result column="staff_id" property="staffId" jdbcType="VARCHAR" />
+    <result column="detail_status" property="detailStatus" jdbcType="VARCHAR" />
+    <result column="send_num" property="sendNum" jdbcType="INTEGER" />
+    <result column="last_send_time" property="lastSendTime" jdbcType="TIMESTAMP" />
+    <result column="reply_time" property="replyTime" jdbcType="TIMESTAMP" />
+    <result column="reply_content" property="replyContent" jdbcType="VARCHAR" />
+    <result column="call_time" property="callTime" jdbcType="TIMESTAMP" />
+    <result column="creater" property="creater" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="BaseResultMapWrapper" type="com.ht.calltree.msg.model.DetailWrapper" >
+    <id column="detail_id" property="detailId" jdbcType="INTEGER" />
+    <result column="content_id" property="contentId" jdbcType="INTEGER" />
+    <result column="staff_id" property="staffId" jdbcType="VARCHAR" />
+    <result column="detail_status" property="detailStatus" jdbcType="VARCHAR" />
+    <result column="send_num" property="sendNum" jdbcType="INTEGER" />
+    <result column="last_send_time" property="lastSendTime" jdbcType="TIMESTAMP" />
+    <result column="reply_time" property="replyTime" jdbcType="TIMESTAMP" />
+    <result column="reply_content" property="replyContent" jdbcType="VARCHAR" />
+    <result column="call_time" property="callTime" jdbcType="TIMESTAMP" />
+    <result column="creater" property="creater" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="staff_login_name" property="staffLoginName" jdbcType="VARCHAR" />
+    <result column="staff_name" property="staffName" jdbcType="VARCHAR" />
+    <result column="staff_spell" property="staffSpell" jdbcType="VARCHAR" />
+    <result column="staff_rt_id" property="staffRtId" jdbcType="VARCHAR" />
+    <result column="primary_group_id" property="primaryGroupId" jdbcType="VARCHAR" />
+    <result column="primary_group_name" property="primaryGroupName" jdbcType="VARCHAR" />
+  </resultMap>
+  <resultMap id="BaseResultMobileFullDetailMap" type="com.ht.calltree.msg.model.back.MobileFullDetail" >
+    <result column="content_id" property="contentId" jdbcType="INTEGER" />
+    <result column="staff_id" property="staffId" jdbcType="VARCHAR" />
+    <result column="detail_status" property="detailStatus" jdbcType="VARCHAR" />
+    <result column="reply_time" property="replyTime" jdbcType="TIMESTAMP" />
+    <result column="staff_name" property="staffName" jdbcType="VARCHAR" />
+    <result column="staff_mobile" property="staffMobile" jdbcType="VARCHAR" />
+    <result column="branch_staff_count" property="branchStaffCount" jdbcType="INTEGER" />
+    <result column="reply_count" property="replyCount" jdbcType="INTEGER" />
+  </resultMap>
+  <resultMap id="BaseResultMobileReplyDetailMap" type="com.ht.calltree.msg.model.back.MobileReplyDetail" >
+    <result column="content_id" property="contentId" jdbcType="INTEGER" />
+    <result column="content_detail" property="contentDetail" jdbcType="VARCHAR" />
+    <result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+    <result column="staff_id" property="staffId" jdbcType="VARCHAR" />
+    <result column="detail_status" property="detailStatus" jdbcType="VARCHAR" />
+    <result column="reply_time" property="replyTime" jdbcType="TIMESTAMP" />
+    <result column="reply_content" property="replyContent" jdbcType="VARCHAR" />
+    <result column="staff_name" property="staffName" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    detail_id, content_id, staff_id, detail_status, send_num, last_send_time, reply_time, 
+    reply_content, call_time, creater, create_time, remark
+  </sql>
+  <sql id="Base_Column_extend_List" >
+    D.detail_id, D.content_id, D.staff_id, D.detail_status, D.send_num, D.last_send_time, D.reply_time,
+    D.reply_content, D.call_time, D.creater, D.create_time, D.remark, U1.staff_login_name, U1.staff_name, U1.staff_spell, U1.staff_rt_id, U1.primary_group_id, U1.primary_group_name
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from T_MSG_DETAIL
+    where detail_id = #{detailId,jdbcType=INTEGER}
+  </select>
+  <select id="listNoReplyData" resultMap="BaseResultMapWrapper" parameterType="java.lang.Integer">
+    select 
+    <include refid="Base_Column_extend_List" />
+    from T_MSG_DETAIL D, T_SYS_USER U1 
+    where D.staff_id = U1.staff_id and D.detail_status = 0 and D.content_id = #{contentId,jdbcType=INTEGER}
+  </select>
+	<select id="getBranchReplyDetail" resultMap="BaseResultMobileFullDetailMap">
+		select d.staff_id, d.content_id, d.detail_status, d.reply_time, u.staff_name, u.staff_mobile, 
+		t1.reply_count, t2.branch_staff_count
+		from T_MSG_DETAIL d, T_SYS_USER u,
+		(
+		SELECT count(T.detail_id) as reply_count FROM T_MSG_DETAIL T
+		where T.staff_id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}  
+		</foreach>
+		AND T.content_id=#{contentId,jdbcType=INTEGER} AND T.STAFF_ID != #{staffId,jdbcType=VARCHAR} AND (detail_status = 1 OR detail_status = 2)
+		) t1,
+		(
+		SELECT count(T.detail_id) as branch_staff_count FROM T_MSG_DETAIL T
+		where T.staff_id in 
+		<foreach item="item" index="index" collection="list" open="(" separator="," close=")">
+			#{item}  
+		</foreach>
+		AND T.content_id=#{contentId,jdbcType=INTEGER} AND T.STAFF_ID != #{staffId,jdbcType=VARCHAR}
+		) t2 where d.staff_id = u.staff_id and d.staff_id = #{staffId,jdbcType=VARCHAR} and d.content_id = #{contentId,jdbcType=INTEGER} order by staff_id
+  	</select>
+  <select id="getMobileReplyDetail" resultMap="BaseResultMobileReplyDetailMap">
+    select 
+    C.content_id, C.content_detail, C.send_time, C.status, D.staff_id, D.detail_status, D.reply_time, D.reply_content, U.staff_name 
+    from T_MSG_CONTENT C, T_MSG_DETAIL D, T_SYS_USER U 
+    where C.content_id = D.content_id and D.staff_id = U.staff_id and C.content_id = #{0} and D.staff_id = #{1}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from T_MSG_DETAIL
+    where detail_id = #{detailId,jdbcType=INTEGER}
+  </delete>
+  <delete id="deleteByForeignKey" parameterType="java.lang.Integer" >
+    delete from T_MSG_DETAIL
+    where content_id = #{contentId,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.ht.calltree.msg.model.Detail" >
+    insert into T_MSG_DETAIL (detail_id, content_id, staff_id, 
+      detail_status, send_num, last_send_time, 
+      reply_time, reply_content, call_time, 
+      creater, create_time, remark
+      )
+    values (#{detailId,jdbcType=INTEGER}, #{contentId,jdbcType=INTEGER}, #{staffId,jdbcType=VARCHAR}, 
+      #{detailStatus,jdbcType=VARCHAR}, #{sendNum,jdbcType=INTEGER}, #{lastSendTime,jdbcType=TIMESTAMP}, 
+      #{replyTime,jdbcType=TIMESTAMP}, #{replyContent,jdbcType=VARCHAR}, #{callTime,jdbcType=TIMESTAMP}, 
+      #{creater,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{remark,jdbcType=VARCHAR}
+      )
+  </insert>
+  	<insert id="insertList" >  
+	    insert into T_MSG_DETAIL (detail_id, content_id, staff_id, 
+      detail_status, send_num, last_send_time, 
+      reply_time, reply_content, call_time, 
+      creater, create_time, remark
+      ) values   
+    <foreach collection="list" item="item" index="index" separator=",">  
+        (#{item.detailId},#{item.contentId},#{item.staffId},#{item.detailStatus},#{item.sendNum},
+        #{item.lastSendTime},#{item.replyTime},#{item.replyContent},#{item.callTime},
+        #{item.creater},#{item.createTime},#{item.remark})  
+	</foreach>  
+  	</insert>
+  
+  <insert id="insertSelective" parameterType="com.ht.calltree.msg.model.Detail" >
+    insert into T_MSG_DETAIL
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="detailId != null" >
+        detail_id,
+      </if>
+      <if test="contentId != null" >
+        content_id,
+      </if>
+      <if test="staffId != null" >
+        staff_id,
+      </if>
+      <if test="detailStatus != null" >
+        detail_status,
+      </if>
+      <if test="sendNum != null" >
+        send_num,
+      </if>
+      <if test="lastSendTime != null" >
+        last_send_time,
+      </if>
+      <if test="replyTime != null" >
+        reply_time,
+      </if>
+      <if test="replyContent != null" >
+        reply_content,
+      </if>
+      <if test="callTime != null" >
+        call_time,
+      </if>
+      <if test="creater != null" >
+        creater,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="detailId != null" >
+        #{detailId,jdbcType=INTEGER},
+      </if>
+      <if test="contentId != null" >
+        #{contentId,jdbcType=INTEGER},
+      </if>
+      <if test="staffId != null" >
+        #{staffId,jdbcType=VARCHAR},
+      </if>
+      <if test="detailStatus != null" >
+        #{detailStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="sendNum != null" >
+        #{sendNum,jdbcType=INTEGER},
+      </if>
+      <if test="lastSendTime != null" >
+        #{lastSendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="replyTime != null" >
+        #{replyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="replyContent != null" >
+        #{replyContent,jdbcType=VARCHAR},
+      </if>
+      <if test="callTime != null" >
+        #{callTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creater != null" >
+        #{creater,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.ht.calltree.msg.model.Detail" >
+    update T_MSG_DETAIL
+    <set >
+      <if test="contentId != null" >
+        content_id = #{contentId,jdbcType=INTEGER},
+      </if>
+      <if test="staffId != null" >
+        staff_id = #{staffId,jdbcType=VARCHAR},
+      </if>
+      <if test="detailStatus != null" >
+        detail_status = #{detailStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="sendNum != null" >
+        send_num = #{sendNum,jdbcType=INTEGER},
+      </if>
+      <if test="lastSendTime != null" >
+        last_send_time = #{lastSendTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="replyTime != null" >
+        reply_time = #{replyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="replyContent != null" >
+        reply_content = #{replyContent,jdbcType=VARCHAR},
+      </if>
+      <if test="callTime != null" >
+        call_time = #{callTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="creater != null" >
+        creater = #{creater,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where content_id = #{contentId,jdbcType=INTEGER} and staff_id = #{staffId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.ht.calltree.msg.model.Detail" >
+    update T_MSG_DETAIL
+    set content_id = #{contentId,jdbcType=INTEGER},
+      staff_id = #{staffId,jdbcType=VARCHAR},
+      detail_status = #{detailStatus,jdbcType=VARCHAR},
+      send_num = #{sendNum,jdbcType=INTEGER},
+      last_send_time = #{lastSendTime,jdbcType=TIMESTAMP},
+      reply_time = #{replyTime,jdbcType=TIMESTAMP},
+      reply_content = #{replyContent,jdbcType=VARCHAR},
+      call_time = #{callTime,jdbcType=TIMESTAMP},
+      creater = #{creater,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      remark = #{remark,jdbcType=VARCHAR}
+    where detail_id = #{detailId,jdbcType=INTEGER}
+  </update>
+</mapper>
